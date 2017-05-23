@@ -1,0 +1,45 @@
+{
+  "name": "afc-ajs",
+  "version": "0.1.0",
+  "description": "Automatically update your local ACF JSON field groups.",
+  "main": "Gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Witt",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "latest",
+    "babel-core": "latest",
+    "babel-preset-es2015": "latest",
+    "css-mqpacker": "latest",
+    "del": "latest",
+    "eslint-config-wordpress": "latest",
+    "gulp": "latest",
+    "gulp-babel": "latest",
+    "gulp-bump": "latest",
+    "gulp-concat": "latest",
+    "gulp-cssnano": "latest",
+    "gulp-eslint": "latest",
+    "gulp-imagemin": "latest",
+    "gulp-notify": "latest",
+    "gulp-plumber": "latest",
+    "gulp-postcss": "latest",
+    "gulp-rename": "latest",
+    "gulp-replace": "latest",
+    "gulp-require-tasks": "latest",
+    "gulp-sass": "latest",
+    "gulp-sass-lint": "latest",
+    "gulp-sort": "latest",
+    "gulp-sourcemaps": "latest",
+    "gulp-uglify": "latest",
+    "gulp-util": "latest",
+    "gulp-watch": "latest",
+    "gulp-wp-pot": "latest",
+    "require-dir": "latest",
+    "yargs": "latest"
+  },
+  "dependencies": {
+    "normalize-scss": "latest"
+  }
+}
