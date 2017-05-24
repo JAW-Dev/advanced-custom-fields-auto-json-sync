@@ -29,11 +29,9 @@ class ACF_AJS_Update_Field_Groups {
 	 *
 	 * @since 0.1.0
 	 * @author Jason Witt
-	 *
-	 * @param string $acf_json_dir The ACF JSON directory path.
 	 */
-	public function __construct( $acf_json_dir ) {
-		$this->acf_json_dir = $acf_json_dir;
+	public function __construct() {
+		$this->acf_json_dir = apply_filters( 'afc_ajs_json_directory', trailingslashit( get_template_directory() ) . 'acf-json' );
 		$this->hooks();
 	}
 
