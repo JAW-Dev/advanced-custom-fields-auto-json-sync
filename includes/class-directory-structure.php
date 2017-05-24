@@ -30,10 +30,10 @@ class ACF_AJS_Directory_Structure {
 	 * @since 0.1.0
 	 * @author Jason Witt
 	 *
-	 * @param string $acf_json_dir The ACF JSON directory path.
+	 * @return void
 	 */
-	public function __construct( $acf_json_dir ) {
-		$this->acf_json_dir = $acf_json_dir;
+	public function __construct() {
+		$this->acf_json_dir = apply_filters( 'afc_ajs_json_directory', trailingslashit( get_template_directory() ) . 'acf-json' );
 		$this->hooks();
 	}
 
@@ -42,6 +42,8 @@ class ACF_AJS_Directory_Structure {
 	 *
 	 * @since 0.1.0
 	 * @author Jason Witt
+	 *
+	 * @return void
 	 */
 	public function hooks() {
 
@@ -61,8 +63,8 @@ class ACF_AJS_Directory_Structure {
 	public function init() {
 
 		// The ACF json directory.
-		$this->maybe_create_directories( $this->acf_json_dir );
-		$this->maybe_create_file( $this->acf_json_dir );
+		$this->maybe_create_directories();
+		$this->maybe_create_file();
 	}
 
 	/**
@@ -131,19 +133,17 @@ class ACF_AJS_Directory_Structure {
 	 * @since 0.1.0
 	 * @author Jason Witt
 	 *
-	 * @param string $dir The full path of the directory to create.
-	 *
 	 * @return bool Return if directory exists.
 	 */
-	private function maybe_create_directories( $dir ) {
+	private function maybe_create_directories() {
 
 		// Bail early if directory exists.
-		if ( file_exists( $dir ) ) {
+		if ( file_exists( $this->acf_json_dir ) ) {
 			return;
 		}
 
 		// Create the directory if it doesn't exist.
-		wp_mkdir_p( $dir );
+		wp_mkdir_p( $this->acf_json_dir );
 	}
 
 	/**
@@ -152,13 +152,11 @@ class ACF_AJS_Directory_Structure {
 	 * @since 0.1.0
 	 * @author Jason Witt
 	 *
-	 * @param string $dir The path to where the file will be created.
-	 *
 	 * @return bool return Return if file exists.
 	 */
-	private function maybe_create_file( $dir ) {
+	private function maybe_create_file() {
 
-		$file          = trailingslashit( $dir ) . 'index.php';
+		$file          = trailingslashit( $this->acf_json_dir ) . 'index.php';
 		$wp_filesystem = $this->get_wp_filesystem();
 		$content       = "<?php if ( ! defined( 'WPINC' ) ) { wp_die( 'No Access Allowed!', 'Error!', array( 'back_link' => true ) ); }";
 
@@ -168,7 +166,7 @@ class ACF_AJS_Directory_Structure {
 		}
 
 		// Create the file.
-		if ( wp_is_writable( $dir ) ) {
+		if ( wp_is_writable( $this->acf_json_dir ) ) {
 			$wp_filesystem->put_contents( $file, $content );
 		}
 	}
