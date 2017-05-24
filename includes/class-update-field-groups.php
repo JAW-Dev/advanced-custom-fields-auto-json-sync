@@ -84,7 +84,7 @@ class ACF_AJS_Update_Field_Groups {
 	public function maybe_update_field_groups_from_json() {
 
 		// Bail early if no field groups exist.
-		if ( empty( $this->get_json_field_groups() ) ) {
+		if ( ! $this->get_json_field_groups() ) {
 
 			return;
 		}
@@ -265,7 +265,7 @@ class ACF_AJS_Update_Field_Groups {
 
 		// bail early if no field groups.
 		if ( empty( $groups ) ) {
-			return;
+			return false;
 		}
 
 		// find JSON field groups which have not yet been imported.
@@ -287,7 +287,7 @@ class ACF_AJS_Update_Field_Groups {
 
 		// bail if no sync needed.
 		if ( empty( $sync ) ) {
-			return;
+			return false;
 		}
 
 		return $sync;
