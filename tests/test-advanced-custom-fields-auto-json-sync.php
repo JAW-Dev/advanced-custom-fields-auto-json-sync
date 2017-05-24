@@ -44,7 +44,6 @@ class Test_ACF_Auto_JSON_Sync extends Base_UnitTestCase {
 			'acf_json_dir',
 			'directory_structure',
 			'update_field_groups',
-			'get_json_files',
 		);
 	}
 
@@ -69,7 +68,6 @@ class Test_ACF_Auto_JSON_Sync extends Base_UnitTestCase {
 	 * @return void
 	 */
 	public function test_plugin_classes() {
-		$this->assertInstanceOf( ACF_AJS_Get_Json_Files::class, new ACF_AJS_Get_Json_Files( afc_ajs() ) );
 		$this->assertInstanceOf( ACF_AJS_Directory_Structure::class, new ACF_AJS_Directory_Structure( afc_ajs() ) );
 		$this->assertInstanceOf( ACF_AJS_Update_Field_Groups::class, new ACF_AJS_Update_Field_Groups( afc_ajs() ) );
 	}
