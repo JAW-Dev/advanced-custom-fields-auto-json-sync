@@ -19,10 +19,7 @@ require_once $_tests_dir . '/includes/functions.php';
  *
  * @since 1.0.0
  */
-function _manually_load_pro_dev_tools_plugin() {
-
-	// Add the theme.
-	switch_theme( '_s' );
+function _manually_load_plugin() {
 
 	// Plugins to activate.
 	$active_plugins = array(
@@ -40,7 +37,7 @@ function _manually_load_pro_dev_tools_plugin() {
 }
 
 // Inject in our plugin.
-tests_add_filter( 'muplugins_loaded', '_manually_load_pro_dev_tools_plugin' );
+tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 // Include the main tests bootstrapper.
 require $_tests_dir . '/includes/bootstrap.php';
