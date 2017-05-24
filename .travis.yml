@@ -1,42 +1,27 @@
-# Travis CI configuration file.
-# @link https://travis-ci.org/
-
-# For use with the Twenty Sixteen WordPress theme
-# @link https://github.com/WordPress/twentysixteen/
-
-# Declare project language and PHP versions to test against.
-# @link http://about.travis-ci.org/docs/user/languages/php/
+sudo: false
 language: php
 
-# Email Notifications.
 notifications:
   email:
     on_success: never
     on_failure: change
 
-
-# Declare versions of PHP to use. Use one decimal max.
 php:
+    - nightly
+    - "7.1"
     - "7.0"
     - "5.6"
     - "5.5"
     - "5.4"
     - "5.3"
 
-# Ditch sudo and use containers.
-# @link http://docs.travis-ci.com/user/migrating-from-legacy/#Why-migrate-to-container-based-infrastructure%3F
-# @link http://docs.travis-ci.com/user/workers/container-based-infrastructure/#Routing-your-build-to-container-based-infrastructure
-sudo: false
-
-# Declare which versions of WordPress to test against.
-# Also declare whether or not to test in Multisite.
 env:
-    # Trunk (current version in development is 4.4)
-    # @link https://github.com/WordPress/WordPress
-    - WP_VERSION=master WP_MULTISITE=0
-
+   - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://localhost:12000 WP_TEST_USER=test WP_TEST_USER_PASS=test
 
 before_script:
-  - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+  - git clone https://github.com/Seravo/wordpress-test-template wp-tests
+  - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
 
-script: phpunit
+script:
+  - phpunit
+  - cd wp-tests/spec && bundle exec rspec test.rb
