@@ -73,36 +73,6 @@ final class ACF_Auto_JSON_Sync {
 	protected static $single_instance = null;
 
 	/**
-	 * The ACF json theme directory name
-	 *
-	 * @since 0.1.0
-	 * @author Jason Witt
-	 *
-	 * @var string $acf_json_dir The ACF json directory name
-	 */
-	protected $acf_json_dir;
-
-	/**
-	 * Instance of ACF_AJS_Directory_Structure
-	 *
-	 * @since 0.1.0
-	 * @author Jason Witt
-	 *
-	 * @var ACF_AJS_Directory_Structure
-	 */
-	protected $directory_structure;
-
-	/**
-	 * Instance of ACF_AJS_Update_Field_Groups
-	 *
-	 * @since 0.1.0
-	 * @author Jason Witt
-	 *
-	 * @var ACF_AJS_Update_Field_Groups
-	 */
-	protected $update_field_groups;
-
-	/**
 	 * Creates or returns an instance of this class.
 	 *
 	 * @since 0.1.0
@@ -127,7 +97,6 @@ final class ACF_Auto_JSON_Sync {
 	protected function __construct() {
 		$this->basename     = plugin_basename( __FILE__ );
 		$this->path         = plugin_dir_path( __FILE__ );
-		$this->acf_json_dir = apply_filters( 'afc_ajs_acf_json_directory', trailingslashit( get_template_directory() ) . 'acf-json' );
 	}
 
 	/**
@@ -138,9 +107,9 @@ final class ACF_Auto_JSON_Sync {
 	 */
 	public function plugin_classes() {
 		$this->include_file( 'includes/class-directory-structure' );
-		new ACF_AJS_Directory_Structure( $this->acf_json_dir );
+		new ACF_AJS_Directory_Structure;
 		$this->include_file( 'includes/class-update-field-groups' );
-		new ACF_AJS_Update_Field_Groups( $this->acf_json_dir );
+		new ACF_AJS_Update_Field_Groups;
 	} // END OF PLUGIN CLASSES FUNCTION
 
 	/**
