@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jawittdesigns/advanced-custom-fields-auto-json-sync.svg?branch=master)](https://travis-ci.org/jawittdesigns/advanced-custom-fields-auto-json-sync)
+
 # Advanced Custom Fields: Auto JSON Sync #
 This is an addon plugin for Advanced Custom Fields. This addon will automate the JSON sync functionality to update your ACF field groups when you are using version control with your project.
 
