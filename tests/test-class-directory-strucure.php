@@ -34,8 +34,6 @@ class Test_ACF_AJS_Directory_Structure extends Base_UnitTestCase {
 			'hooks',
 			'init',
 			'get_wp_filesystem',
-			'set_acf_json_save_directory',
-			'set_acf_json_load_directory',
 			'maybe_create_directories',
 			'maybe_create_file',
 		);
@@ -58,16 +56,6 @@ class Test_ACF_AJS_Directory_Structure extends Base_UnitTestCase {
 			array(
 				'hook_name' => 'init',
 				'method'    => 'init',
-				'priority'  => 10,
-			),
-			array(
-				'hook_name' => 'acf/settings/save_json',
-				'method'    => 'set_acf_json_save_directory',
-				'priority'  => 10,
-			),
-			array(
-				'hook_name' => 'acf/settings/load_json',
-				'method'    => 'set_acf_json_load_directory',
 				'priority'  => 10,
 			),
 		);
