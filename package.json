@@ -1,6 +1,6 @@
 {
   "name": "afc-ajs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Automatically update your local ACF JSON field groups.",
   "main": "Gulpfile.js",
   "scripts": {

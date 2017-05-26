@@ -14,7 +14,7 @@
  * @link    https://github.com/jawittdesigns/advanced-custom-fields-auto-json-sync
  *
  * @package ACF_Auto_JSON_Sync
- * @version 0.1.0
+ * @version 0.1.1
  */
 
 /**
