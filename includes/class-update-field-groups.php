@@ -89,8 +89,9 @@ class ACF_AJS_Update_Field_Groups {
 			return;
 		}
 
-		$sync = $this->get_json_field_groups();
-		$url  = 'edit.php?post_type=acf-field-group';
+		$sync        = $this->get_json_field_groups();
+		$url         = 'edit.php?post_type=acf-field-group';
+		$current_url = $_SERVER['REQUEST_URI'];
 
 		// disable filters to ensure ACF loads raw data from DB.
 		acf_disable_filters();
@@ -114,9 +115,11 @@ class ACF_AJS_Update_Field_Groups {
 				$new_ids[] = $field_group['ID'];
 			}
 
-			// redirect.
-			wp_redirect( admin_url( $url . '&acfsynccomplete=' . implode( ',', $new_ids ) ) );
-			exit;
+			if ( admin_url( $url ) === $current_url ) {
+				// redirect.
+				wp_redirect( admin_url( $url . '&acfsynccomplete=' . implode( ',', $new_ids ) ) );
+				exit;
+			}
 		}
 	}
 
