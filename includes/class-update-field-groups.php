@@ -90,6 +90,7 @@ class ACF_AJS_Update_Field_Groups {
 		}
 
 		$sync = $this->get_json_field_groups();
+		$url  = 'edit.php?post_type=acf-field-group';
 
 		// disable filters to ensure ACF loads raw data from DB.
 		acf_disable_filters();
@@ -106,10 +107,14 @@ class ACF_AJS_Update_Field_Groups {
 			}
 			// import.
 			acf_import_field_group( $sync[ $key ] );
+
+			// New IDs.
+			$new_ids[] = $field_group['ID'];
 		}
 
-		// Disable the sync group fields table filter.
-		add_filter( 'views_edit-acf-field-group', '__return_false' );
+		// redirect.
+		wp_redirect( admin_url( $url . '&acfsynccomplete=' . implode( ',', $new_ids ) ) );
+		exit;
 	}
 
 	/**
