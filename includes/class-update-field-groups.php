@@ -99,22 +99,25 @@ class ACF_AJS_Update_Field_Groups {
 		// disable JSON - this prevents a new JSON file being created and causing a 'change' to theme files - solves git anoyance.
 		acf_update_setting( 'json', false );
 
-		foreach ( $sync as $key => $v ) {
+		if ( ! empty( $sync ) ) {
 
-			// append fields.
-			if ( acf_have_local_fields( $key ) ) {
-				$sync[ $key ]['fields'] = acf_get_local_fields( $key );
+			foreach ( $sync as $key => $v ) {
+
+				// append fields.
+				if ( acf_have_local_fields( $key ) ) {
+					$sync[ $key ]['fields'] = acf_get_local_fields( $key );
+				}
+				// import.
+				$field_group = acf_import_field_group( $sync[ $key ] );
+
+				// New IDs.
+				$new_ids[] = $field_group['ID'];
 			}
-			// import.
-			acf_import_field_group( $sync[ $key ] );
 
-			// New IDs.
-			$new_ids[] = $field_group['ID'];
+			// redirect.
+			wp_redirect( admin_url( $url . '&acfsynccomplete=' . implode( ',', $new_ids ) ) );
+			exit;
 		}
-
-		// redirect.
-		wp_redirect( admin_url( $url . '&acfsynccomplete=' . implode( ',', $new_ids ) ) );
-		exit;
 	}
 
 	/**
