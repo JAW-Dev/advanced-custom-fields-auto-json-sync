@@ -99,7 +99,6 @@ class ACF_AJS_Update_Field_Groups {
 
 		// Bail early if no field groups exist.
 		if ( ! $this->get_json_field_groups( $json_dir ) ) {
-
 			return;
 		}
 
