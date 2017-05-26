@@ -31,7 +31,6 @@ class ACF_AJS_Update_Field_Groups {
 	 * @author Jason Witt
 	 */
 	public function __construct() {
-		$this->acf_json_dir = apply_filters( 'afc_ajs_json_directory', trailingslashit( get_template_directory() ) . 'acf-json' );
 		$this->hooks();
 	}
 
@@ -42,7 +41,6 @@ class ACF_AJS_Update_Field_Groups {
 	 * @author Jason Witt
 	 */
 	public function hooks() {
-
 		add_action( 'init', array( $this, 'init' ) );
 	}
 
@@ -55,7 +53,6 @@ class ACF_AJS_Update_Field_Groups {
 	 * @return void
 	 */
 	public function init() {
-
 		$this->maybe_update_field_groups();
 	}
 
@@ -69,8 +66,23 @@ class ACF_AJS_Update_Field_Groups {
 	 */
 	public function maybe_update_field_groups() {
 
-		$this->maybe_update_field_groups_from_json();
-		$this->maybe_trash_field_group_from_database();
+		// Get the JSON dirs.
+		if ( function_exists( 'acf_get_setting' ) ) {
+			$json_dirs = acf_get_setting( 'load_json' );
+		} else {
+			$json_dirs = array( trailingslashit( get_template_directory() ) . 'acf-json' );
+		}
+
+		// Bail if no JSON directories are set.
+		if ( empty( $json_dirs ) ) {
+			return;
+		}
+
+		// Loop through the JSON file directories.
+		foreach ( $json_dirs as $dir ) {
+			$this->maybe_update_field_groups_from_json( $dir );
+			$this->maybe_trash_field_group_from_database( $dir );
+		}
 	}
 
 	/**
@@ -79,17 +91,19 @@ class ACF_AJS_Update_Field_Groups {
 	 * @since 0.1.0
 	 * @author Jason Witt
 	 *
+	 * @param string $json_dir The directory to the field group JSON files.
+	 *
 	 * @return void
 	 */
-	public function maybe_update_field_groups_from_json() {
+	public function maybe_update_field_groups_from_json( $json_dir ) {
 
 		// Bail early if no field groups exist.
-		if ( ! $this->get_json_field_groups() ) {
+		if ( ! $this->get_json_field_groups( $json_dir ) ) {
 
 			return;
 		}
 
-		$sync        = $this->get_json_field_groups();
+		$sync        = $this->get_json_field_groups( $json_dir );
 		$url         = 'edit.php?post_type=acf-field-group';
 		$current_url = $_SERVER['REQUEST_URI'];
 
@@ -101,22 +115,22 @@ class ACF_AJS_Update_Field_Groups {
 		acf_update_setting( 'json', false );
 
 		if ( ! empty( $sync ) ) {
-
 			foreach ( $sync as $key => $v ) {
 
-				// append fields.
+				// Append the fields to the array.
 				if ( acf_have_local_fields( $key ) ) {
 					$sync[ $key ]['fields'] = acf_get_local_fields( $key );
 				}
-				// import.
+				// Import the field groups.
 				$field_group = acf_import_field_group( $sync[ $key ] );
 
 				// New IDs.
 				$new_ids[] = $field_group['ID'];
 			}
 
+			// Check if on the ACF Filed FGroups page.
 			if ( admin_url( $url ) === $current_url ) {
-				// redirect.
+				// Redirect.
 				wp_redirect( admin_url( $url . '&acfsynccomplete=' . implode( ',', $new_ids ) ) );
 				exit;
 			}
@@ -129,12 +143,13 @@ class ACF_AJS_Update_Field_Groups {
 	 * @since 0.1.0
 	 * @author Jason Witt
 	 *
+	 * @param string $json_dir The directory to the field group JSON files.
+	 *
 	 * @return void
 	 */
-	public function maybe_trash_field_group_from_database() {
-
+	public function maybe_trash_field_group_from_database( $json_dir ) {
 		$database_keys = $this->get_database_field_group_keys();
-		$json_key      = $this->get_json_field_group_keys();
+		$json_key      = $this->get_json_field_group_keys( $json_dir );
 		$diffs         = array_diff( $database_keys, $json_key );
 
 		// Bail early if there are no database or json keys.
@@ -147,10 +162,11 @@ class ACF_AJS_Update_Field_Groups {
 			return;
 		}
 
+		// Loop through the field groups.
 		foreach ( $diffs as $key => $value ) {
-
 			if ( isset( $key ) ) {
 
+				// Trash the field groups.
 				acf_trash_field_group( $key );
 			}
 		}
@@ -165,9 +181,7 @@ class ACF_AJS_Update_Field_Groups {
 	 * @return array $keys An array of the field group keys in set in the database.
 	 */
 	public function get_database_field_group_keys() {
-
 		$keys = array();
-
 		$field_groups = get_posts( array(
 			'post_type'					       => 'acf-field-group',
 			'posts_per_page'			     => 99,
@@ -177,12 +191,11 @@ class ACF_AJS_Update_Field_Groups {
 			'post_status'				       => array( 'publish', 'acf-disabled' ),
 			'update_post_meta_cache'	 => false,
 		));
-
 		if ( ! empty( $field_groups ) ) {
 
+			// Build array for the post name and IDs.
 			$keys = wp_list_pluck( $field_groups, 'post_name', 'ID' );
 		}
-
 		return $keys;
 	}
 
@@ -196,14 +209,12 @@ class ACF_AJS_Update_Field_Groups {
 	 */
 	public function get_wp_filesystem() {
 
+		// Include the file.php to load WP_Filesystem().
 		if ( ! function_exists( 'WP_Filesystem' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
-
 		WP_Filesystem();
-
 		global $wp_filesystem;
-
 		return $wp_filesystem;
 	}
 
@@ -213,47 +224,57 @@ class ACF_AJS_Update_Field_Groups {
 	 * @since 0.1.0
 	 * @author Jason Witt
 	 *
+	 * @param string $json_dir The directory to the field group JSON files.
+	 *
 	 * @return keys $field_groups An array of the jason field group keys.
 	 */
-	public function get_json_field_group_keys() {
+	public function get_json_field_group_keys( $json_dir ) {
 
-		$path          = untrailingslashit( $this->acf_json_dir );
-		$wp_filesystem = $this->get_wp_filesystem();
-
-		if ( file_exists( $path ) ) {
-
-			$field_groups = array();
-			$keys         = array();
-			$dir          = opendir( $path );
-
-			while ( false !== ( $file = readdir( $dir ) ) ) {
-
-				// validate type.
-				if ( pathinfo( $file, PATHINFO_EXTENSION ) !== 'json' ) {
-					continue;
-				}
-
-				// read json.
-				$json = $wp_filesystem->get_contents( "{$path}/{$file}" );
-
-				// validate json.
-				if ( empty( $json ) ) {
-					continue;
-				}
-
-				// decode.
-				$json = json_decode( $json, true );
-
-				$field_groups[] = $json;
-			}
-
-			if ( ! empty( $field_groups ) ) {
-
-				$keys = wp_list_pluck( $field_groups, 'key' );
-			}
-
-			return $keys;
+		// Bail if no JSON directory is set.
+		if ( ! $json_dir ) {
+			return;
 		}
+
+		$path          = untrailingslashit( $json_dir );
+		$wp_filesystem = $this->get_wp_filesystem();
+		$field_groups  = array();
+		$keys          = array();
+		$dir           = opendir( $path );
+
+		// Bail if directory doesn't exist.
+		if ( ! file_exists( $path ) ) {
+			return;
+		}
+
+		// Get the filed group keys.
+		while ( false !== ( $file = readdir( $dir ) ) ) {
+
+			// validate type.
+			if ( pathinfo( $file, PATHINFO_EXTENSION ) !== 'json' ) {
+				continue;
+			}
+
+			// read json.
+			$json = $wp_filesystem->get_contents( "{$path}/{$file}" );
+
+			// validate json.
+			if ( empty( $json ) ) {
+				continue;
+			}
+
+			// decode.
+			$json = json_decode( $json, true );
+
+			$field_groups[] = $json;
+		}
+
+		// Build an array of the field group keys.
+		if ( ! empty( $field_groups ) ) {
+
+			$keys = wp_list_pluck( $field_groups, 'key' );
+		}
+
+		return $keys;
 	}
 
 	/**
@@ -262,12 +283,19 @@ class ACF_AJS_Update_Field_Groups {
 	 * @since 0.1.0
 	 * @author Jason Witt
 	 *
+	 * @param string $json_dir The directory to the field group JSON files.
+	 *
 	 * @return array $sync An Array of json group fields that have been updated.
 	 */
-	public function get_json_field_groups() {
+	public function get_json_field_groups( $json_dir ) {
+
+		// Bail if no JSON directory is set.
+		if ( ! $json_dir ) {
+			return;
+		}
 
 		// Return empty array if no field groups exist.
-		if ( count( glob( trailingslashit( $this->acf_json_dir ) . '/*.json', GLOB_BRACE ) ) < 1 ) {
+		if ( count( glob( trailingslashit( $json_dir ) . '/*.json', GLOB_BRACE ) ) < 1 ) {
 			return array();
 		}
 
@@ -281,7 +309,6 @@ class ACF_AJS_Update_Field_Groups {
 
 		// find JSON field groups which have not yet been imported.
 		foreach ( $groups as $group ) {
-
 			$local    = acf_maybe_get( $group, 'local', false );
 			$modified = acf_maybe_get( $group, 'modified', 0 );
 			$private  = acf_maybe_get( $group, 'private', false );
