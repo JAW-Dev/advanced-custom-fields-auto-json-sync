@@ -7,6 +7,3 @@ The plugin will create the `acf-json` directory in your active theme, and scans 
 
 ### Requirements ###
 [Advanced Custom Fields](https://wordpress.org/plugins/advanced-custom-fields/)
-
-### Version ###
-v0.1.0 - beta
