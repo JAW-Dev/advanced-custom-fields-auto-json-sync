@@ -105,7 +105,7 @@ class ACF_AJS_Update_Field_Groups {
 
 		$sync        = $this->get_json_field_groups( $json_dir );
 		$url         = 'edit.php?post_type=acf-field-group';
-		$current_url = $_SERVER['REQUEST_URI'];
+		$current_url = ( isset( $_SERVER['HTTPS'] ) ? 'https' : 'http' ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
 		// disable filters to ensure ACF loads raw data from DB.
 		acf_disable_filters();
